@@ -1,11 +1,17 @@
 import React from "react";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import { useDispatch, useSelector } from "react-redux";
 import Checkbox from "@mui/material/Checkbox";
 import EditIcon from "@mui/icons-material/Edit";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Modal from "@mui/material/Modal";
-import { selectTask, handleModalOpen, selectIsModalOpen } from "../taskSlice";
+import {
+  selectTask,
+  completeTask,
+  handleModalOpen,
+  selectIsModalOpen,
+  deleteTask,
+} from "../taskSlice";
 import TaskForm from "../taskForm/TaskForm";
 import { Box, Container } from "@mui/material";
 import styles from "./TaskItem.module.scss";
@@ -15,14 +21,15 @@ interface PropTypes {
 }
 
 const TaskItem: React.FC<PropTypes> = ({ task }) => {
-  const dispatch = useAppDispatch();
-  const isModalOpen = useAppSelector(selectIsModalOpen);
+  const dispatch = useDispatch();
+  const isModalOpen = useSelector(selectIsModalOpen);
   const handleOpen = () => {
     dispatch(selectTask(task));
     dispatch(handleModalOpen(true));
   };
+  console.log(task);
   const handleClose = () => dispatch(handleModalOpen(false));
-  const { id, title, completed } = task;
+  const { title, completed } = task;
 
   return (
     <div className={styles.root}>
@@ -33,14 +40,14 @@ const TaskItem: React.FC<PropTypes> = ({ task }) => {
       <div className={styles.right_item}>
         <Checkbox
           checked={completed}
-          onClick={() => console.log(`check ${id}`)}
+          onClick={() => dispatch(completeTask(task))}
           className={styles.checkbox}
         />
         <button onClick={handleOpen} className={styles.edit_button}>
           <EditIcon className={styles.icon} />
         </button>
         <button
-          onClick={() => console.log(`delete ${id}`)}
+          onClick={() => dispatch(deleteTask(task))}
           className={styles.delete_button}
         >
           <DeleteIcon className={styles.icon} />

@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-
 interface TaskState {
   //    taskが何個あるのかを管理する
   idCount: number;
@@ -33,6 +32,19 @@ export const taskSlice = createSlice({
       };
       state.tasks = [newTask, ...state.tasks];
     },
+    // taskの編集
+    editTask: (state, action) => {
+      //state.tasksの中から指定したtaskを抜き出す
+      const task = state.tasks.find((t) => t.id === action.payload.id);
+      if (task) {
+        //抜き出したtaskのtitleを書き換える
+        task.title = action.payload.title;
+      }
+    },
+    deleteTask: (state, action) => {
+      //指定したtask以外で新しくstate.tasksの配列を直している
+      state.tasks = state.tasks.filter((t) => t.id !== action.payload.id);
+    },
     // どのtaskを選択しているか管理
     selectTask: (state, action) => {
       state.selectedTask = action.payload;
@@ -41,10 +53,26 @@ export const taskSlice = createSlice({
     handleModalOpen: (state, action) => {
       state.isModalOpen = action.payload;
     },
+    // task完了・未完了のチェックを変更
+    completeTask: (state, action) => {
+      //state,tasksの中から指定したtaskを抜き出す
+      const task = state.tasks.find((t) => t.id === action.payload.id);
+      if (task) {
+        //抜き出したtaskのcompletedを反転させる
+        task.completed = !task.completed;
+      }
+    },
   },
 });
 
-export const { createTask, selectTask, handleModalOpen } = taskSlice.actions;
+export const {
+  createTask,
+  editTask,
+  completeTask,
+  selectTask,
+  handleModalOpen,
+  deleteTask,
+} = taskSlice.actions;
 
 export const selectTasks = (state: RootState): TaskState["tasks"] =>
   state.task.tasks;
